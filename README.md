@@ -9,7 +9,8 @@ PetroGG from Mihai is an excellent foundation for this example. We appreciate al
 Also, we have included two additional Saturation models. Mihai has an excellent Petrophysical repository with various Petrophysical routines including saturations. We started with his Waxman-Smits and Dual-Water saturation models and then made a few changes. For Dual Water we are using the code from George Coates' paper mentioned below. For Waxman-Smits we used the Hill, Shirley and Klein technique to solve for Qv and then used the saturation equation provided by Crain in lieu of an iterative approach.
 
 
-![Depth_Image](DepthPlot.png)
+
+![Depth_Image](depthPlot.png)
 
 
 1. Coates, G.R., Gardner, J.S., and Miller, D.L., 1994, Applying pulse-echo NMR to shaly sand formation evaluation, paper B, 35th Annual SPWLA Logging Symposium Transactions, 22 p.
