@@ -53,7 +53,7 @@ data['NPHI']=data['NPHI']
 ===============================================================================
 """
 gr_clean, gr_shale = 45, 120                                      # Shale Parmaetrs for GR
-sp_clean, sp_shale = -55, 0                                       # Shale Parameters for SP
+sp_clean, sp_shale = -50, 0                                       # Shale Parameters for SP
 neut_shale, den_shale, por_shale = 0.32, 2.65, 0.24               # Shale Parmaters for Neutron-Density
 neut_matrix, den_matrix = -0.02, 2.65                             # Matrix Parmameters for Neutron-Density
 neut_fl, den_fl = 1.0, 1.1                                        # Fluid Parameters for Neutron-Density
@@ -516,7 +516,7 @@ ax6.set_xlabel('Vsh [v.v]')
 # several methods (vsh = min (vshgr,vshsp,vshnd)) or Hodges-Lehman Median Filter
 # =============================================================================
 
-logs['vsh']=logs['vshnd']
+logs['vsh']=logs['vshsp']
 
 
 
