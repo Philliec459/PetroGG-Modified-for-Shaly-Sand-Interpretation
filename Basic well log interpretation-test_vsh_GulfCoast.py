@@ -88,6 +88,7 @@ mslope = 2
 ===============================================================================
 """
 T = 150.       # Reservoir temperature in DegF
+TC=(T-32)/1.8  # Reservoir temperature in DegF
 RwT = T        # Temperature of Rw measument
 rwa=0.03       # water resistivity at RwT
 vsh_limit=0.1  # volume of shale upper limit for selction of data for graph
@@ -101,8 +102,10 @@ vsh_limit=0.1  # volume of shale upper limit for selction of data for graph
 Rw75=((RwT+6.77)*rwa)/(75+6.77)
 # Salinity in KPPM
 SAL=(10**((3.562-math.log10(Rw75-0.0123))/0.955))/1000
-B = math.exp(7.3-28.242/math.log(T)-0.2266*math.log(rwa))  
-print('Res temp =', T, 'Rw at Res Temp =',rwa, 'Rw@75 =', Rw75, 'B =',B, 'SAL =', SAL)      
+B = math.exp(7.3-28.242/math.log(T)-0.2266*math.log(rwa)) 
+Bdacy=(1-0.83*math.exp(-math.exp(-2.38+(42.17/TC))/rwa))*(-3.16+1.59*math.log(TC))**2 #SCA Paper SCA2006-29
+
+print('Res temp =', T, 'Rw at Res Temp =',rwa, 'Rw@75 =', Rw75, 'B =',B, 'Bdacy =',Bdacy,'SAL =', SAL) 
 
 
 
@@ -848,7 +851,7 @@ logs['Sw_dw'] =(sw_dw(Rw, T, RwT, logs.ILD, logs.PHIT, logs.PHIE, logs.Swb)).cli
 #Calculate the BVW Effective for DW:
 logs['CBVWE']=logs['Sw_dw']*logs['PHIT'] - logs['CBW']
 
-logs['Sw_ws'] =(waxmansmits(Rw, T, RwT, logs.ILD, logs.PHIT, logs.PHIE, den_fl, m_cem, mslope, logs.Swb, Rw75, logs.Qv, B)).clip(0,1)
+logs['Sw_ws'] =(waxmansmits(Rw,T,RwT,logs.ILD,logs.PHIT,logs.PHIE,den_fl,m_cem,mslope,logs.Swb,Rw75,logs.Qv,Bdacy)).clip(0,1)
 logs['WSCBVWE']=logs['Sw_ws']*logs['PHIT'] - logs['CBW']
 
 logs['matrix']=1-logs.vsh*por_shale-logs.PHIE
