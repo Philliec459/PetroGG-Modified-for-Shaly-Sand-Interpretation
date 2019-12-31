@@ -792,8 +792,8 @@ def sw_dw(Rw, T, RwT, Rt, PHIT, PHIE, Swb):
         #----- THE ACTUAL W ---------------------------------
         #
         #Wq = 0.4*Swia + 1.65
-        # Increase Wq by starting with 1.85 vs. Coates 1.65
-        Wq = 0.4*Swia + 1.85
+        # Increase Wq by starting with 1.90 vs. Coates 1.65
+        Wq = 0.4*Swia + 1.90
         #----- WW AND WI CONSTRAN W ------------------------
         #----- COMPUTE CBVW TOTAL -----------------------
         #AA=CW
