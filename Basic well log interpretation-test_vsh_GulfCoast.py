@@ -77,7 +77,7 @@ m_cem = 2.0    #cementation factor
 n_sat = 2.0    #saturation exponent
 
 # Slope of Swb vs. Mstar apparent for Mstar across all Swb's
-mslope = 2
+mslope = 3.
 
 """
 ===============================================================================
