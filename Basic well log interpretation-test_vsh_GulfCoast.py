@@ -777,7 +777,7 @@ def sw_dw(Rw, T, RwT, Rt, PHIT, PHIE, Swb):
         Ct   = 1/Rt
         #--------------------------------------------------
         #Swb = 1.0 - (PHIE/PHIT)
-        #Swia=BVI/PHIE, but no NMR BVI here
+        #Swia=BVI/PHIE, but no NMR BVI. To Improvise Swia = Swb
         Swia = Swb #estimate
         #--------------------------------------------------
         CBW = Swb * PHIT
@@ -788,9 +788,12 @@ def sw_dw(Rw, T, RwT, Rt, PHIT, PHIE, Swb):
         #----- W @ Sw = 1 -----------------------------------
         #WW=math.log10(Ct/DCWW)/(math.log10(PHIT))
         #----- W @ Sw AT BVI --------------------------------
-        #        WI=LOG10(CT/DCWI)/(LOG10(BVIT))
+        #WI=LOG10(CT/DCWI)/(LOG10(BVIT))
         #----- THE ACTUAL W ---------------------------------
-        Wq = 0.4*Swia + 1.65
+        #
+        #Wq = 0.4*Swia + 1.65
+        # Increase Wq by starting with 1.85 vs. Coates 1.65
+        Wq = 0.4*Swia + 1.85
         #----- WW AND WI CONSTRAN W ------------------------
         #----- COMPUTE CBVW TOTAL -----------------------
         #AA=CW
