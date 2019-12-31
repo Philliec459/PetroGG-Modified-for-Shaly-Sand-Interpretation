@@ -10,6 +10,11 @@ Also, we have included two additional Saturation models. Mihai also has an excel
 
     Qv = Swb/(0.6425/((FluidDensity*Salinity(kppm))**0.5) + 0.22) 
 
+One of the key methods to calibrate the Waxman-Smits results is to refine the m* used in the saturation equation. We do this by plotting the apparent m* vs. Swb to define the lowermost trend in the data. This is the m* trend that defines how m* increases with increasing Swb.
+
+![Mstar_Image](apparent_mstar.png)
+
+Depth Plot
 
 ![Depth_Image](depthPlot.png)
 
