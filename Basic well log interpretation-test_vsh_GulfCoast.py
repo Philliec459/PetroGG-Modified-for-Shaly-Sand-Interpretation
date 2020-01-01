@@ -54,7 +54,7 @@ data['NPHI']=data['NPHI']
 """
 gr_clean, gr_shale = 45, 120                                      # Shale Parmaetrs for GR
 sp_clean, sp_shale = -50, 0                                       # Shale Parameters for SP
-neut_shale, den_shale, por_shale = 0.32, 2.65, 0.24               # Shale Parmaters for Neutron-Density
+neut_shale, den_shale, por_shale = 0.39, 2.48, 0.24               # Shale Parmaters for Neutron-Density
 neut_matrix, den_matrix = -0.02, 2.65                             # Matrix Parmameters for Neutron-Density
 neut_fl, den_fl = 1.0, 1.1                                        # Fluid Parameters for Neutron-Density
 dt_matrix, dt_fluid, dt_shale, cp, alpha = 55.5,188.0,90.0,1,5/8  # Sonic Parameters
@@ -88,10 +88,10 @@ mslope = 3.
 ===============================================================================
 """
 T = 150.       # Reservoir temperature in DegF
-TC=(T-32)/1.8  # Reservoir temperature in DegF
+TC=(T-32)/1.8  # Temp DegC
 RwT = T        # Temperature of Rw measument
 rwa=0.03       # water resistivity at RwT
-vsh_limit=0.1  # volume of shale upper limit for selction of data for graph
+vsh_limit=0.5  # volume of shale upper limit for selction of data for graph
 
 
 """
@@ -100,12 +100,15 @@ vsh_limit=0.1  # volume of shale upper limit for selction of data for graph
  ===============================================================================
 """
 Rw75=((RwT+6.77)*rwa)/(75+6.77)
+
 # Salinity in KPPM
 SAL=(10**((3.562-math.log10(Rw75-0.0123))/0.955))/1000
+
 B = math.exp(7.3-28.242/math.log(T)-0.2266*math.log(rwa)) 
+
 Bdacy=(1-0.83*math.exp(-math.exp(-2.38+(42.17/TC))/rwa))*(-3.16+1.59*math.log(TC))**2 #SCA Paper SCA2006-29
 
-print('Res temp =', T, 'Rw at Res Temp =',rwa, 'Rw@75 =', Rw75, 'B =',B, 'Bdacy =',Bdacy,'SAL =', SAL) 
+print('Res temp =', T, 'Rw at Res Temp =',rwa, 'Rw@75 =', Rw75, 'B =',B, 'Bdacy =',Bdacy,'SAL =', SAL)      
 
 
 
@@ -138,7 +141,7 @@ bottom_depth = 4800
 ===============================================================================
 """
 top_summary    = 4500
-bottom_summary = 4750
+bottom_summary = 4800
 
 
 """
@@ -197,7 +200,7 @@ def triple_combo_plot(top_depth,bottom_depth):
     ax01.set_xlim(-100,10)
     ax01.spines['top'].set_position(('outward',0))
     ax01.set_xlabel("SP [mV]")
-    ax01.plot(logs.SP, logs.DEPT, label='SP[mV]', color='black')
+    ax01.plot(logs.SP, logs.DEPT, label='SP[mV]', color='black',linewidth=3.0)
     ax01.set_xlabel('SP[mV]',color='black')    
     ax01.tick_params(axis='x', colors='black')
     ax01.grid(True)
@@ -224,7 +227,7 @@ def triple_combo_plot(top_depth,bottom_depth):
     ax11.grid(True)
     ax11.spines['top'].set_position(('outward',80))
     ax11.set_xlabel('ILD[ohmm]', color='red')
-    ax11.plot(logs.ILD, logs.DEPT, label='ILD[ohmm]', color='red')
+    ax11.plot(logs.ILD, logs.DEPT, label='ILD[ohmm]', color='red', linewidth=2.0)
     ax11.tick_params(axis='x', colors='red')    
     
     ax12=ax[1].twiny()
@@ -238,10 +241,10 @@ def triple_combo_plot(top_depth,bottom_depth):
     ax13=ax[1].twiny()
     ax13.set_xlim(0.1,100)
     ax13.set_xscale('log')
-    ax13.plot(logs.LL8, logs.DEPT, '--',label='LL8[ohmm]', color='black') 
+    ax13.plot(logs.LL8, logs.DEPT, '--',label='LL8[ohmm]', color='blue') 
     ax13.spines['top'].set_position(('outward',0))
-    ax13.set_xlabel('LL8[ohmm]',color='black')
-    ax13.tick_params(axis='x', colors='black')
+    ax13.set_xlabel('LL8[ohmm]',color='blue')
+    ax13.tick_params(axis='x', colors='blue')
 
     #3rd track: DT, RHOB, NPHI track
     ax21=ax[2].twiny()
@@ -453,8 +456,8 @@ ax1.plot(logs.GR, logs.DEPT, color='green')
 ax1.set_xlabel('GR [api]', color='green')
 
 ax11=ax1.twiny()
-ax11.plot(logs.SP, logs.DEPT, color='blue')
-ax11.set_xlabel("SP [mV]",color='blue')
+ax11.plot(logs.SP, logs.DEPT, color='black', linewidth = 3.0)
+ax11.set_xlabel("SP [mV]",color='black')
 
 
 #The graph of GR histogram
@@ -516,7 +519,7 @@ ax6.set_xlabel('Vsh [v.v]')
 # several methods (vsh = min (vshgr,vshsp,vshnd)) or Hodges-Lehman Median Filter
 # =============================================================================
 
-logs['vsh']=logs['vshsp']
+logs['vsh']=(logs['vshnd']).clip(0,1)
 
 
 
@@ -627,20 +630,20 @@ logs['PHIxND']=phixnd(logs.PHINshc,logs.PHIDshc).clip(0,1)
 ######logs['PHIE']=logs['PHIxND']
 
 #logs['PHIT']=logs['PHIxND']
-logs['PHIT']=(logs['PHID']+logs['NPHI'])/2
+logs['PHIT']=((logs['PHID']+logs['NPHI'])/2).clip(0,1)
 #logs['PHIT']=logs['Phixnd_chartbook']
 
 
 #logs['PHIE']=logs['PHIT'] - por_shale*logs['vsh']
-logs['CBW'] = por_shale*logs['vsh']
-logs['PHIE']=logs['PHIT'] - por_shale*logs['vsh']
+logs['CBW'] = (por_shale*logs['vsh']).clip(0,1)
+logs['PHIE']=(logs['PHIT'] - por_shale*logs['vsh']).clip(0,1)
 
 
 # Calculations for Swb used in Dual Water and WaxSmits
-logs['Swb'] = 1 - logs['PHIE']/logs['PHIT']
+logs['Swb'] =( 1 - logs['PHIE']/logs['PHIT']).clip(0,1)
 
 # Qv from Swb using Hill, Shirley and Klein
-logs['Qv'] = logs['Swb']/(0.6425/((den_fl*SAL)**0.5) +0.22)
+logs['Qv'] = (logs['Swb']/(0.6425/((den_fl*SAL)**0.5) +0.22)).clip(0,5)
 
 
 
@@ -653,6 +656,12 @@ logs['Qv'] = logs['Swb']/(0.6425/((den_fl*SAL)**0.5) +0.22)
 # logs['Mstarapp'] = math.log10(  rwa/logs['ILD']*(1+rwa*B*logs['Qv'])  )   /   10**(logs['PHIT'])
 # 
 # =============================================================================
+
+
+#logs['term1'] =(  rwa/logs['ILD']*(1+rwa*B*logs['Qv'])  )   
+#logs['term2'] = (logs['PHIT'])
+#logs['Mstarapp']=math.log(10,logs['term1'])/math.log(10,logs['term2'])
+
 logs['Mstarapp'] = m_cem + mslope*logs['Swb']
 
 
@@ -686,12 +695,12 @@ logs['Mstarapp'] = m_cem + mslope*logs['Swb']
 import matplotlib.ticker as ticker
 
 pickett_figure=plt.figure(figsize=(7,6))
-plt.title('Pickett Plot'+ ' for Vsh < '+str(int(vsh_limit*100))+'%')
+plt.title('Pickett Plot'+ ' for Vsh < '+str(int(vsh_limit*100))+'%', color = 'blue')
 plt.loglog(logs.ILD[logs.vsh<vsh_limit],logs.PHIT[logs.vsh<vsh_limit],'ro', label='',color='red')
 plt.xlim(0.01,1000)
 plt.ylim(0.01,1)
-plt.ylabel('PHIT [v/v]')
-plt.xlabel('ILD [ohmm]')
+plt.ylabel('PHIT [v/v]', color = 'blue')
+plt.xlabel('ILD [ohmm]', color = 'blue')
 plt.gca().xaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 plt.gca().yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 
@@ -714,21 +723,21 @@ plt.grid(True, which='both',ls='-',color='gray')
 
 
 cbw_figure=plt.figure(figsize=(3,3))
-plt.title('Vsh vs.CBW')
+plt.title('Vsh vs.CBW', color = 'blue')
 plt.plot(logs.vsh,logs.CBW,'ro', label='',color='red')
 plt.xlim(0.0,1)
 plt.ylim(0.0,1)
-plt.ylabel('CBW [v/v]')
-plt.xlabel('Vsh [v/v]')
+plt.ylabel('CBW [v/v]', color = 'blue')
+plt.xlabel('Vsh [v/v]', color = 'blue')
 plt.grid(True, which='both',ls='-',color='gray')
 
 mapp_figure=plt.figure(figsize=(3,3))
-plt.title('Swb vs.Mstar_Apparent')
+plt.title('Swb vs.Mstar_Apparent', color = 'blue')
 plt.plot(logs.Swb,logs.Mstarapp,'ro', label='',color='red')
 plt.xlim(0.0,1)
-plt.ylim(1.0,4)
-plt.ylabel('Mstar Apparent')
-plt.xlabel('Swb [v/v]')
+plt.ylim(1.0,5)
+plt.ylabel('Mstar Apparent', color = 'blue')
+plt.xlabel('Swb [v/v]', color = 'blue')
 plt.grid(True, which='both',ls='-',color='gray')
 
 
@@ -780,7 +789,7 @@ def sw_dw(Rw, T, RwT, Rt, PHIT, PHIE, Swb):
         Ct   = 1/Rt
         #--------------------------------------------------
         #Swb = 1.0 - (PHIE/PHIT)
-        #Swia=BVI/PHIE, but no NMR BVI. To Improvise Swia = Swb
+        #Swia=BVI/PHIE, but no NMR BVI here
         Swia = Swb #estimate
         #--------------------------------------------------
         CBW = Swb * PHIT
@@ -791,12 +800,10 @@ def sw_dw(Rw, T, RwT, Rt, PHIT, PHIE, Swb):
         #----- W @ Sw = 1 -----------------------------------
         #WW=math.log10(Ct/DCWW)/(math.log10(PHIT))
         #----- W @ Sw AT BVI --------------------------------
-        #WI=LOG10(CT/DCWI)/(LOG10(BVIT))
+        #        WI=LOG10(CT/DCWI)/(LOG10(BVIT))
         #----- THE ACTUAL W ---------------------------------
-        #
         #Wq = 0.4*Swia + 1.65
-        # Increase Wq by starting with 1.90 vs. Coates 1.65
-        Wq = 0.4*Swia + 1.90
+        Wq = 0.4*Swia + 1.9
         #----- WW AND WI CONSTRAN W ------------------------
         #----- COMPUTE CBVW TOTAL -----------------------
         #AA=CW
@@ -829,7 +836,7 @@ def waxmansmits(Rw, T, RwT, Rt, PHIT, PHIE, den_fl, m_cem, mslope, Swb, Rw75, Qv
          - m_cem - best determined from SCAL      
         *Returns:
          - Sw_Total_WS - total water saturation from Waxman-Smits
-         - Sw_WS =(  ((1/PHIT**mstar)*Rw)/Rt*(1+Rw*B*QV)/Sw )**(1/n_sat)
+         - Sw_WS =(  ((1/PHIT**mstar)*Rw)/Rt*(1+Rw*B*QV)/Sw )**(1/nstar)
         '''
         
         #convert m_cem to mstar with increase in mstar with increase in Swb
@@ -845,16 +852,16 @@ Rw =rwa
 
 logs['Sw_archie']=(sw_archie(Rw,logs.ILD,logs.PHIT,1,m_cem,n_sat)).clip(0,1)
 #Calculate the BVW (bulk volume of water) for Archie:
-logs['BVW']=logs['Sw_archie']*logs['PHIT']
+logs['BVW']=(logs['Sw_archie']*logs['PHIT']).clip(0,1)
 
 logs['Sw_dw'] =(sw_dw(Rw, T, RwT, logs.ILD, logs.PHIT, logs.PHIE, logs.Swb)).clip(0,1)
 #Calculate the BVW Effective for DW:
-logs['CBVWE']=logs['Sw_dw']*logs['PHIT'] - logs['CBW']
+logs['CBVWE']=(logs['Sw_dw']*logs['PHIT'] - logs['CBW']).clip(0,1)
 
-logs['Sw_ws'] =(waxmansmits(Rw,T,RwT,logs.ILD,logs.PHIT,logs.PHIE,den_fl,m_cem,mslope,logs.Swb,Rw75,logs.Qv,Bdacy)).clip(0,1)
-logs['WSCBVWE']=logs['Sw_ws']*logs['PHIT'] - logs['CBW']
+logs['Sw_ws'] =(waxmansmits(Rw, T, RwT, logs.ILD, logs.PHIT, logs.PHIE, den_fl, m_cem, mslope, logs.Swb, Rw75, logs.Qv, Bdacy)).clip(0,1)
+logs['WSCBVWE']=(logs['Sw_ws']*logs['PHIT'] - logs['CBW']).clip(0,1)
 
-logs['matrix']=1-logs.vsh*por_shale-logs.PHIE
+logs['matrix']=(1-logs.vsh*por_shale-logs.PHIE).clip(0,1)
 
 
 
@@ -908,7 +915,7 @@ for (i,j) in zip(tops_depths,tops):
 """
 ax01=ax[0].twiny()
 ax01.set_xlim(-100,10)
-ax01.plot(logs.SP, logs.DEPT, label='SP[mV]', color='black')
+ax01.plot(logs.SP, logs.DEPT, label='SP[mV]', color='black',linewidth=3.0)
 ax01.set_xlabel('SP[mV]',color='black')    
 ax01.tick_params(axis='x', colors='black')
     
@@ -937,7 +944,7 @@ ax11.set_xscale('log')
 ax11.grid(True)
 ax11.spines['top'].set_position(('outward',80))
 ax11.set_xlabel('ILD[ohmm]', color='red')
-ax11.plot(logs.ILD, logs.DEPT, label='ILD[ohmm]', color='red')
+ax11.plot(logs.ILD, logs.DEPT, label='ILD[ohmm]', color='red', linewidth = 2.0)
 ax11.tick_params(axis='x', colors='red')    
 
 ax12=ax[1].twiny()
@@ -951,54 +958,61 @@ ax12.tick_params(axis='x', colors='purple')
 ax13=ax[1].twiny()
 ax13.set_xlim(0.1,100)
 ax13.set_xscale('log')
-ax13.plot(logs.LL8, logs.DEPT, '--',label='LL8[ohmm]', color='black') 
+ax13.plot(logs.LL8, logs.DEPT, '--',label='LL8[ohmm]', color='blue') 
 ax13.spines['top'].set_position(('outward',0))
-ax13.set_xlabel('LL8[ohmm]',color='black')
-ax13.tick_params(axis='x', colors='black')
+ax13.set_xlabel('LL8[ohmm]',color='blue')
+ax13.tick_params(axis='x', colors='blue')
 
 
 """
 #3rd track: DT, RHOB, NPHI track
 """
+
 ax21=ax[2].twiny()
-ax21.grid(True)
-ax21.set_xlim(115,36)
-ax21.spines['top'].set_position(('outward',0))
-ax21.set_xlabel('DT[us/ft]')
-ax21.plot(logs.DT, logs.DEPT, label='DT[us/ft]', color='blue')
-ax21.set_xlabel('DT[us/ft]', color='blue')    
-ax21.tick_params(axis='x', colors='blue')
-    
+ax21.set_xlim(-0.15,0.45)
+ax21.invert_xaxis()
+ax21.plot(logs.PHIE, logs.DEPT, label='PHIE[v/v]', color='purple',linewidth=2.0) 
+ax21.spines['top'].set_position(('outward',120))
+ax21.set_xlabel('PHIE[v/v]', color='purple')    
+ax21.tick_params(axis='x', colors='purple') 
+#ax21.legend(loc='lower left')
+
 ax22=ax[2].twiny()
 ax22.set_xlim(-0.15,0.45)
 ax22.invert_xaxis()
-ax22.plot(logs.NPHI, logs.DEPT, label='NPHI[v/v]', color='green') 
-ax22.spines['top'].set_position(('outward',40))
-ax22.set_xlabel('NPHI[v/v]', color='green')    
-ax22.tick_params(axis='x', colors='green')
-    
-ax23=ax[2].twiny()
-ax23.set_xlim(1.95,2.95)
-ax23.plot(logs.RHOB, logs.DEPT ,label='RHOB[g/cc]', color='red') 
-ax23.spines['top'].set_position(('outward',80))
-ax23.set_xlabel('RHOB[g/cc]',color='red')
-ax23.tick_params(axis='x', colors='red')
+ax22.plot(logs.PHIT, logs.DEPT, label='PHIT[v/v]', color='black',linewidth=2.0) 
+ax22.spines['top'].set_position(('outward',160))
+ax22.set_xlabel('PHIT[v/v]', color='black')    
+ax22.tick_params(axis='x', colors='black') 
+ax22.fill_betweenx(logs.DEPT,logs.PHIE,logs.PHIT,color='lightgray',label='Shale')
+ax22.legend(loc='lower left')
 
+ax23=ax[2].twiny()
+ax23.grid(True)
+ax23.set_xlim(115,36)
+ax23.spines['top'].set_position(('outward',0))
+ax23.set_xlabel('DT[us/ft]')
+ax23.plot(logs.DT, logs.DEPT, label='DT[us/ft]', color='blue',linewidth=1.0)
+ax23.set_xlabel('DT[us/ft]', color='blue')    
+ax23.tick_params(axis='x', colors='blue')
+#ax23.legend(loc='lower left')
+    
 ax24=ax[2].twiny()
 ax24.set_xlim(-0.15,0.45)
 ax24.invert_xaxis()
-ax24.plot(logs.PHIE, logs.DEPT, label='PHIE[v/v]', color='purple') 
-ax24.spines['top'].set_position(('outward',120))
-ax24.set_xlabel('PHIE[v/v]', color='purple')    
-ax24.tick_params(axis='x', colors='purple') 
-
+ax24.plot(logs.NPHI, logs.DEPT, label='NPHI[v/v]', color='green') 
+ax24.spines['top'].set_position(('outward',40))
+ax24.set_xlabel('NPHI[v/v]', color='green')    
+ax24.tick_params(axis='x', colors='green')
+#ax24.legend(loc='lower left')
+    
 ax25=ax[2].twiny()
-ax25.set_xlim(-0.15,0.45)
-ax25.invert_xaxis()
-ax25.plot(logs.PHIT, logs.DEPT, label='PHIT[v/v]', color='orange',linewidth=1.0) 
-ax25.spines['top'].set_position(('outward',160))
-ax25.set_xlabel('PHIT[v/v]', color='orange')    
-ax25.tick_params(axis='x', colors='orange') 
+ax25.set_xlim(1.95,2.95)
+ax25.plot(logs.RHOB, logs.DEPT ,label='RHOB[g/cc]', color='red',linewidth=1.0) 
+ax25.spines['top'].set_position(('outward',80))
+ax25.set_xlabel('RHOB[g/cc]',color='red')
+ax25.tick_params(axis='x', colors='red')
+#ax25.legend(loc='lower left')
 
 
 """
@@ -1033,6 +1047,7 @@ ax33.plot(logs.Sw_dw, logs.DEPT, label='Sw_dw', color='black',linewidth=0.5)
 ax33.spines['top'].set_position(('outward',80))
 ax33.set_xlabel('Sw_DW', color='black')    
 ax33.tick_params(axis='x', colors='black')
+
 
  
 """
@@ -1104,10 +1119,10 @@ ax52.legend(loc='lower left')
 ==============================================================================
 """
 
-logs.loc[top_summary:bottom_summary,{'PHIE','Sw_archie','BVW','vsh'}].hist(figsize=(8, 6),alpha=0.5,bins=30,color='red')
+logs.loc[top_summary:bottom_summary,{'PHIE','Sw_ws','WSCBVWE','vsh'}].hist(figsize=(8, 6),alpha=0.5,bins=30,color='red')
 print ('MAIN ZONE of INTEREST:', top_summary, 'to', bottom_summary, 'feet')
 print ('Mean values:')
-logs.loc[top_summary:bottom_summary,{'PHIE','Sw_archie','BVW','vsh'}].mean()
+logs.loc[top_summary:bottom_summary,{'PHIE','Sw_ws','WSCBVWE','vsh'}].mean()
 
 
 
@@ -1116,7 +1131,7 @@ logs.loc[top_summary:bottom_summary,{'PHIE','Sw_archie','BVW','vsh'}].mean()
 
 
 
-curves_to_export={'PHIE','Sw_archie','BVW','vsh'}
+curves_to_export={'PHIE','Sw_ws','BVW','vsh'}
 for x in curves_to_export:
     data[x] =logs[x]
 
