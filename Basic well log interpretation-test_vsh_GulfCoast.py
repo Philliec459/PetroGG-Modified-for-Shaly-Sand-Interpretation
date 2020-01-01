@@ -43,7 +43,7 @@ data['NPHI']=data['NPHI']
 
 """
 ===============================================================================
-           The following are the logging inputs for all calculations          
+           The following are the log parameter inputs for all calculations          
 ===============================================================================            
 
 ===============================================================================
