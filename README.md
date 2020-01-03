@@ -18,6 +18,8 @@ We then use the Waxman-Smits saturation equation provided by Crain in lieu of an
 
 We have found that Waxman-Smits method is a bit more flexible to use in shaly-sand interpretations in that we can model the Waxman-Smits cementation exponent m* to vary with Swb according to the trends observed in the wet intervals from our Swb vs. apparent m* cross plot as shown below.  Apparent m* increases as Swb increases in the wet intervals which leads to less apparent hydrocarbon saturations being calculated with higher Swb.  This is not true if one uses a constant m* for the analysis. The m* at Swb=0 y-intercept is the Archie m, but in this case m* increases with increased Swb. We have also found that a wrong Rw can lead to an unrealistic y-intercept to give us feedback on our choise of Rw too.
 
+![Mstar_Image](apparent_mstar.png)
+
 In the plot above we calculated the apparent m* data in another program to make this plot using the following equation:
 
     m* apparent = log10(Rw /(Rt*(1 + Rw*B*Qv))) / log10(PHIT)  
@@ -25,7 +27,6 @@ In the plot above we calculated the apparent m* data in another program to make 
 This will be included in a future update.
 
 
-![Mstar_Image](apparent_mstar.png)
 
 Depth Plot:
 
